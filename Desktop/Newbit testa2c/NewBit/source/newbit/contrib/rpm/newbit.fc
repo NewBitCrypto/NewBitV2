@@ -1,0 +1,8 @@
+/usr/bin/newbit-cli		--	gen_context(system_u:object_r:newbit_exec_t,s0)
+/usr/sbin/newbitd		--	gen_context(system_u:object_r:newbit_exec_t,s0)
+/usr/lib(64)?/newbit/newbitd		--	gen_context(system_u:object_r:newbit_exec_t,s0)
+
+/etc/newbit(/.*)?		gen_context(system_u:object_r:newbit_conf_t,s0)
+/var/lib/newbit(/.*)?		gen_context(system_u:object_r:newbit_var_lib_t,s0)
+
+(/var)?/run/newbitd(/.*)?   gen_context(system_u:object_r:newbit_var_run_t,s0)

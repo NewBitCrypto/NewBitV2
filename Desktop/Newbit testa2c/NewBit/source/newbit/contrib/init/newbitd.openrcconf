@@ -1,0 +1,33 @@
+# /etc/conf.d/newbitd: config file for /etc/init.d/newbitd
+
+# Config file location
+#NEWBITD_CONFIGFILE="/etc/newbit/newbit.conf"
+
+# What directory to write pidfile to?  (created and owned by $NEWBITD_USER)
+#NEWBITD_PIDDIR="/var/run/newbitd"
+
+# What filename to give the pidfile
+#NEWBITD_PIDFILE="${NEWBITD_PIDDIR}/newbitd.pid"
+
+# Where to write newbitd data (be mindful that the blockchain is large)
+#NEWBITD_DATADIR="/var/lib/newbitd"
+
+# User and group to own newbitd process
+#NEWBITD_USER="newbit"
+#NEWBITD_GROUP="newbit"
+
+# Path to newbitd executable
+#NEWBITD_BIN="/usr/bin/newbitd"
+
+# Nice value to run newbitd under
+#NEWBITD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#NEWBITD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for newbitd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+NEWBITD_SIGTERM_TIMEOUT=60

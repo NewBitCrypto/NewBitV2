@@ -1,0 +1,11 @@
+[Protocol]
+exec=newbit-qt '%u'
+protocol=newbit
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=NewBit Core
+Comment=Connect to the NewBit P2P Network
+Comment[de]=Verbinde mit dem NewBit peer-to-peer Netzwerk
+Comment[fr]=NewBit, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=NewBit, eşten eşe kriptografik sanal para birimi
+Exec=newbit-qt %u
+Terminal=false
+Type=Application
+Icon=newbit128
+MimeType=x-scheme-handler/newbit;
+Categories=Office;Finance;

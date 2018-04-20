@@ -1,0 +1,6 @@
+usr/local/bin/newbit-qt usr/bin
+share/pixmaps/newbit32.xpm usr/share/pixmaps
+share/pixmaps/newbit16.xpm usr/share/pixmaps
+share/pixmaps/newbit128.png usr/share/pixmaps
+debian/newbit-qt.desktop usr/share/applications
+debian/newbit-qt.protocol usr/share/kde4/services/

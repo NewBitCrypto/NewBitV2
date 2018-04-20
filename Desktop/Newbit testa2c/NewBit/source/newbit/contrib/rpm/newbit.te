@@ -1,0 +1,81 @@
+policy_module(newbit, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type newbit_t;
+type newbit_exec_t;
+init_daemon_domain(newbit_t, newbit_exec_t)
+
+permissive newbit_t;
+
+type newbit_initrc_exec_t;
+init_script_file(newbit_initrc_exec_t)
+
+type newbit_conf_t;
+files_type(newbit_conf_t)
+
+type newbit_var_lib_t;
+files_type(newbit_var_lib_t)
+
+type newbit_var_run_t;
+files_type(newbit_var_run_t)
+
+type newbit_port_t;
+corenet_port(newbit_port_t)
+
+########################################
+#
+# newbit local policy
+#
+allow newbit_t self:process { fork };
+
+allow newbit_t self:fifo_file rw_fifo_file_perms;
+allow newbit_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(newbit_t, newbit_conf_t, newbit_conf_t)
+manage_files_pattern(newbit_t, newbit_conf_t, newbit_conf_t)
+
+manage_dirs_pattern(newbit_t, newbit_var_lib_t, newbit_var_lib_t)
+manage_files_pattern(newbit_t, newbit_var_lib_t, newbit_var_lib_t)
+files_var_lib_filetrans(newbit_t, newbit_var_lib_t, { dir file })
+
+manage_dirs_pattern(newbit_t, newbit_var_run_t, newbit_var_run_t)
+manage_files_pattern(newbit_t, newbit_var_run_t, newbit_var_run_t)
+
+sysnet_dns_name_resolve(newbit_t)
+corenet_all_recvfrom_unlabeled(newbit_t)
+
+allow newbit_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(newbit_t)
+corenet_tcp_sendrecv_generic_node(newbit_t)
+corenet_tcp_sendrecv_all_ports(newbit_t)
+corenet_tcp_bind_generic_node(newbit_t)
+
+gen_require(`
+    type newbit_port_t;
+')
+allow newbit_t newbit_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type newbit_port_t;
+')
+allow newbit_t newbit_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(newbit_t)
+
+files_read_etc_files(newbit_t)
+
+miscfiles_read_localization(newbit_t)
+
+sysnet_dns_name_resolve(newbit_t)
+
+allow newbit_t newbit_exec_t:file execute_no_trans;
+allow newbit_t self:process setsched;
+corecmd_exec_ls(newbit_t)
+corenet_tcp_connect_http_port(newbit_t)
+dev_read_urand(newbit_t)
+fs_getattr_xattr_fs(newbit_t)
+kernel_read_system_state(newbit_t)

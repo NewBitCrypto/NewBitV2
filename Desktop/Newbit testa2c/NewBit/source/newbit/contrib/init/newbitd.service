@@ -1,0 +1,22 @@
+[Unit]
+Description=NewBit's distributed currency daemon
+After=network.target
+
+[Service]
+User=newbit
+Group=newbit
+
+Type=forking
+PIDFile=/var/lib/newbitd/newbitd.pid
+ExecStart=/usr/bin/newbitd -daemon -pid=/var/lib/newbitd/newbitd.pid \
+-conf=/etc/newbit/newbit.conf -datadir=/var/lib/newbitd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

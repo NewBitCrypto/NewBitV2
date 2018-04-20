@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/newbit/.newbit" ]; then
+	NEWBITD_DEFAULT_DATADIR="/var/lib/newbit/.newbit"
+else
+	NEWBITD_DEFAULT_DATADIR="/var/lib/newbitd"
+fi
+
+NEWBITD_CONFIGFILE=${NEWBITD_CONFIGFILE:-/etc/newbit/newbit.conf}
+NEWBITD_PIDDIR=${NEWBITD_PIDDIR:-/var/run/newbitd}
+NEWBITD_PIDFILE=${NEWBITD_PIDFILE:-${NEWBITD_PIDDIR}/newbitd.pid}
+NEWBITD_DATADIR=${NEWBITD_DATADIR:-${NEWBITD_DEFAULT_DATADIR}}
+NEWBITD_USER=${NEWBITD_USER:-${NEWBIT_USER:-newbit}}
+NEWBITD_GROUP=${NEWBITD_GROUP:-newbit}
+NEWBITD_BIN=${NEWBITD_BIN:-/usr/bin/newbitd}
+NEWBITD_NICE=${NEWBITD_NICE:-${NICELEVEL:-0}}
+NEWBITD_OPTS="${NEWBITD_OPTS:-${NEWBIT_OPTS}}"
+
+name="NewBit Core Daemon"
+description="NewBit cryptocurrency P2P network daemon"
+
+command="/usr/bin/newbitd"
+command_args="-pid=\"${NEWBITD_PIDFILE}\" \
+		-conf=\"${NEWBITD_CONFIGFILE}\" \
+		-datadir=\"${NEWBITD_DATADIR}\" \
+		-daemon \
+		${NEWBITD_OPTS}"
+
+required_files="${NEWBITD_CONFIGFILE}"
+start_stop_daemon_args="-u ${NEWBITD_USER} \
+			-N ${NEWBITD_NICE} -w 2000"
+pidfile="${NEWBITD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${NEWBITD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${NEWBITD_USER}:${NEWBITD_GROUP}" \
+	"${NEWBITD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${NEWBITD_USER}:${NEWBITD_GROUP}" \
+	"${NEWBITD_PIDDIR}"
+
+	checkpath -f \
+	-o ${NEWBITD_USER}:${NEWBITD_GROUP} \
+	-m 0660 \
+	${NEWBITD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${NEWBITD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run newbitd."
+		eerror "The setting must appear in ${NEWBITD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"NewBit Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}
